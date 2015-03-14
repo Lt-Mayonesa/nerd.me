@@ -16,12 +16,58 @@
             <div id="start-page">
                 <img src="img/logo.png" width="170" height="200" alt="start image" />
             </div>
-            <div class="doc-page" >
+            <div class="doc-page" id="home">
                 <div class="doc-header">
                     <h1 data-i18n="app.studing">..Studing..</h1>
                 </div>
                 <div class="doc-content">
                     <p data-i18n="app.hello"></p>
+                    <button onclick="$page.toPage('#exam-layout','');">ir al examen ese</button>
+                </div>
+                <div class="doc-footer">
+                    <p>footer</p>
+                </div>
+            </div>
+            <div class="doc-page" id="exam-layout">
+                <div class="doc-header">
+                    <h1 data-i18n="app.yourexam"></h1>
+                    <button class="header-btnBack" data-i18n="app.back" onclick="$page.goBack();"></button>
+                </div>
+                <div class="doc-content">
+                    <p data-i18n="app.hello"></p>
+                    <button onclick="$page.toPage('#create-QA','');">QA</button>
+                    <button onclick="$page.toPage('#sync-exam','');">sync</button>
+                </div>
+                <div class="doc-footer">
+                    
+                </div>
+            </div>
+            <div class="doc-page" id="create-QA">
+                <div class="doc-header">
+                    <h1>Q A</h1>
+                    <button class="header-btnBack" data-i18n="app.back" onclick="$page.goBack();"></button>
+                </div>
+                <div class="doc-content">
+                    <p data-i18n="app.hello"></p>
+                    <button onclick="$page.toPage('#exam-layout','');">exma layout</button>
+                    <button onclick="$page.toPage('#sync-exam','');"> sync exam</button>
+                </div>
+                <div class="doc-footer">
+                    
+                </div>
+            </div>
+            <div class="doc-page" id="sync-exam">
+                <div class="doc-header">
+                    <h1>SYNC</h1>
+                    <button class="header-btnBack" data-i18n="app.back" onclick="$page.goBack();"></button>
+                </div>
+                <div class="doc-content">
+                    <p data-i18n="app.hello"></p>
+                    <button onclick="$page.toPage('#create-QA','');">QA</button>
+                    <button onclick="$page.toPage('#exam-layout','');">layout</button>
+                </div>
+                <div class="doc-footer">
+                    
                 </div>
             </div>
         </div>

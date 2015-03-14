@@ -1,6 +1,14 @@
 {
     "app" : {
         "studing" : "..studing..",
-        "hello" : "hello"
+        "hello" : "hello",
+        "yourexam" : "your exam",
+        "back" : "back"
+    },
+    "dialogs" : {
+        "exitDialogMsg" : "exit app?",
+        "exitDialogTitle" : "Exit",
+        "btnYes" : "yes",
+        "btnNo" : "no"
     }
 }
