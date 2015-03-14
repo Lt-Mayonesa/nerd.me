@@ -1,16 +1,24 @@
+//page obj
+var page = {
+    'current' : {
+        
+    }
+};
+
+
 /**
  * set language based on device lang
  */
 function setLanguage() {
     var nav_lang = navigator.language.split('-');
     var lang = nav_lang[0];
-    console.log(lang);
     
     i18n.init({ lng: lang, debug: true }, function() {
         $(".app").i18n();
         // some timeout for fake loading... lel
         setTimeout(function() {
             $('#start-page').hide();
+            getUserExams();
         }, 1000);
   });
 }
@@ -18,7 +26,7 @@ function setLanguage() {
  * get list of user exams stored on device
  */
 function getUserExams() {
-    
+    window.plugins.spinnerDialog.show(null, 'mensajito');
 }
 
 var app = {
@@ -39,5 +47,6 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         setLanguage();
+        
     }
 };
