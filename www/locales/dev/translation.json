@@ -1,14 +1,23 @@
 {
     "app" : {
-        "studing" : "..studing..",
-        "hello" : "hello",
-        "yourexam" : "your exam",
-        "back" : "back"
+        "studing" : "..STUDING..",
+        "hello" : "HELLO",
+        "yourexam" : "YOUR EXAM",
+        "back" : "BACK",
+        "label" : {
+            "title" : "TITLE:",
+            "question" : "QUESTION",
+            "answer" : "ANSWER"
+        },
+        "btn" : {
+            "addQuestion" : "ADD QUESTION",
+            "createExam" : "CREATE"
+        }
     },
     "dialogs" : {
-        "exitDialogMsg" : "exit app?",
-        "exitDialogTitle" : "Exit",
-        "btnYes" : "yes",
-        "btnNo" : "no"
+        "exitDialogMsg" : "EXIT APP?",
+        "exitDialogTitle" : "EXIT",
+        "btnYes" : "YES",
+        "btnNo" : "NO"
     }
 }

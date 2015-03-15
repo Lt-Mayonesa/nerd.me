@@ -1,4 +1,10 @@
 var navLog = [];
+var examsDir;
+var $user = {
+    name: 'user',
+    id: '',
+    exams: []
+}
 
 //page obj
 var $page = {
@@ -34,7 +40,6 @@ var $page = {
         $page.current = id;
         $page.buildPage($page.current);
         $($page.current).show();
-        console.log(navLog);
         if ($page.current === '#home') navLog = [];
     },
     
@@ -52,7 +57,6 @@ var $page = {
         } else {
             var backTo = navLog[(navLog.length) - 1];
             navLog.pop();
-            console.log(navLog);
             this.toPage(backTo.pageId, backTo.tween, true);
         }
         
@@ -87,11 +91,24 @@ function setLanguage() {
         }, 2000);
   });
 }
+
+function fileSystemFail(error) {
+    console.log(error);
+    navigator.notification.alert('error');
+}
+
 /**
  * get list of user exams stored on device
  */
 function getUserExams() {
-    
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+        examsDir = fileSystem.root.getDirectory('exams', {create: true}, function (dirEntry) {
+            var dirReader = dirEntry.createReader();
+            dirReader.readEntries(function (data) {
+                $user.exams = data;
+            }, fileSystemFail);
+        }, fileSystemFail);
+    }, fileSystemFail);
 }
 /**
  * creates json file exam and store localy;
@@ -104,6 +121,28 @@ function createExamQA(form) {
     newTitle = newTitle.toLowerCase();
     newTitle = newTitle.replace(/\s/g,'-');
 }
+/**
+* adds QA to exam
+* @returns {void}
+*/
+function addQuestion() {
+var total = $('#formQA .q').length;
+    total++;
+    $('#questions').append(
+        '<label for="p' + total + '">Pregunta ' + total + ':<label>\
+        <input class="q" id="p' + total + '" type="text" name="p' + total + '" />\
+        <label for="a' + total + '">Respuesta:</label>\
+        <input id="a' + total + '" name="a' + total + '" type="text" />'
+    );
+    $('#p' + total).focus();
+}
+
+function checkConnection() {
+    var con = navigator.connection.type;
+    if (con == Connection.NONE) return false;
+    return true;
+}
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -124,8 +163,23 @@ var app = {
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
+    onDeviceReady: function(event) {
+        getUserExams();
         setLanguage();
-        
+        //get this thing out from here ASAP BOI. U KNOW IT GURL
+        var $form = $('#formQA');
+        $form.submit(function(){
+            totalQuestions = ($('#questions').find('.q').length);
+            $('#totalQA').attr('value', totalQuestions);
+            if (checkConnection()) {
+                $.post($(this).attr('action'), $(this).serialize(), function(response){
+                    //alert("Succes! \n File: " + response.exam.title);
+
+                },'json');
+            }
+            return false;
+        });
+    },
+    receivedEvent: function(event) {
     }
 };
