@@ -18,7 +18,7 @@
             </div>
             <div class="doc-page" id="home">
                 <div class="doc-header">
-                    <h1 data-i18n="app.studing">..Studing..</h1>
+                    <h1 data-i18n="app.studing">..Studying..</h1>
                 </div>
                 <div class="doc-content">
                     <p data-i18n="app.hello"></p>
@@ -47,15 +47,22 @@
                     <button class="header-btnBack" data-i18n="app.back" onclick="$page.goBack();"></button>
                 </div>
                 <div class="doc-content">
-                    <form id="formQA">
+                    <form id="formQA" method="post" action="http://joacocampero.tk/examenes/exams/generateexam.php">
                         <div id="questions">
+                            <label for="langSelect" data-i18n="app.label.language">language</label>
+                            <select id="langSelect" name="langSelect">
+                                <option value="auto" data-i18n="app.label.default">frances</option>
+                                <option value="es" data-i18n="app.label.spanish">spanish</option>
+                                <option value="en" data-i18n="app.label.english">english</option>
+                                <option value="fr" data-i18n="app.label.french">french</option>
+                            </select>
                             <label for="title" data-i18n="app.label.title"></label>
-                            <input id="title" name="title" type="text" tabindex="1" required/>
-                            <input id="totalQA" name="totalQA" type="number" />
+                            <input id="title" name="title" type="text" tabindex="1"/>
+                            <input id="totalQA" name="totalQA" type="number" style="display: none"/>
                             <label for="p1" data-i18n="app.label.question">Pregunta</label>
-                            <input class="q" id="p1" type="text" name="p1" tabindex="2" required/>
+                            <input class="q" id="p1" type="text" name="p1" tabindex="2" />
                             <label for="a1" data-i18n="app.label.answer">Respuesta</label>
-                            <input id="a1" name="a1" type="text" tabindex="3" required/>
+                            <input id="a1" name="a1" type="text" tabindex="3" />
                         </div>
                         <button type="button" onclick="addQuestion();" data-i18n="app.btn.addQuestion">otra pregunta</button>
                         <button type="submit" data-i18n="app.btn.createExam">Save exam</button>

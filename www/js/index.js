@@ -3,7 +3,18 @@ var examsDir;
 var $user = {
     name: 'user',
     id: '',
+    email: '',
     exams: []
+}
+var Exam = function(title) {
+    this.title = title;
+}
+
+var examQA = {
+    title : '',
+    total : 0,
+    questions : [],
+    answers : []
 }
 
 //page obj
@@ -81,7 +92,6 @@ function init() {
 function setLanguage() {
     var nav_lang = navigator.language.split('-');
     var lang = nav_lang[0];
-    
     i18n.init({ lng: lang, debug: true }, function() {
         $(".app").i18n();
         // some timeout for fake loading... lel
@@ -90,6 +100,10 @@ function setLanguage() {
             init();
         }, 2000);
   });
+}
+
+function loading(show) {
+    console.log('loading: ' + show);
 }
 
 function fileSystemFail(error) {
@@ -106,6 +120,7 @@ function getUserExams() {
             var dirReader = dirEntry.createReader();
             dirReader.readEntries(function (data) {
                 $user.exams = data;
+                console.log('Exams: ' + $user.exams);
             }, fileSystemFail);
         }, fileSystemFail);
     }, fileSystemFail);
@@ -115,18 +130,21 @@ function getUserExams() {
  * @param {type} form the form submited $('bla')
  * @returns {undefined} null
  */
-function createExamQA(form) {
-    
+function createExamQA(jsonString) {
+    console.log(jsonString);
+    var examun = JSON.parse(jsonString);
+    var newTitle = examun.title;
     newTitle = newTitle.replace(/[^a-zA-Z0-9\s]/g,"");
     newTitle = newTitle.toLowerCase();
     newTitle = newTitle.replace(/\s/g,'-');
+    console.log(newTitle);
 }
 /**
 * adds QA to exam
 * @returns {void}
 */
 function addQuestion() {
-var total = $('#formQA .q').length;
+    var total = $('#formQA .q').length;
     total++;
     $('#questions').append(
         '<label for="p' + total + '">Pregunta ' + total + ':<label>\
@@ -141,6 +159,42 @@ function checkConnection() {
     var con = navigator.connection.type;
     if (con == Connection.NONE) return false;
     return true;
+}
+
+
+function bindFormSubmits() {
+    $('#formQA').submit(function (e) {
+        e.preventDefault;
+        var data;
+        var newExam;
+        var totalQuestions = ($('#questions').find('.q').length);
+
+        $('#totalQA').attr('value', totalQuestions);
+
+        var fakeInternet = false;
+        if (fakeInternet) {
+            data = $(this).serialize();
+            $.post($(this).attr('action'), data, function(response){
+                console.log(response);
+                newExam = response.exam;
+                createExamQA(newExam);
+                navigator.notification.alert(i18n.t('dialogs.examCreated'));
+            },'json');
+        } else {
+            data = $(this).serializeArray();
+            console.log('no hay internet');
+            var txt = '{';
+            for (i = 0; i < data.length; i++) {
+                txt += '"' + data[i].name + '":"' + data[i].value + '"';
+                if (i < totalQuestions -1) txt += ',';
+            }
+            txt += '}';
+            newExam = txt;
+            createExamQA(newExam);
+        }
+        return false;
+    });
+
 }
 
 var app = {
@@ -158,6 +212,9 @@ var app = {
             e.preventDefault;
             $page.goBack();
         }, false);
+        $(document).bind('ajaxError', fileSystemFail())
+        .bind('ajaxStart', loading(true))
+        .bind('ajaxComplete', loading(false));
     },
     // deviceready Event Handler
     //
@@ -166,19 +223,7 @@ var app = {
     onDeviceReady: function(event) {
         getUserExams();
         setLanguage();
-        //get this thing out from here ASAP BOI. U KNOW IT GURL
-        var $form = $('#formQA');
-        $form.submit(function(){
-            totalQuestions = ($('#questions').find('.q').length);
-            $('#totalQA').attr('value', totalQuestions);
-            if (checkConnection()) {
-                $.post($(this).attr('action'), $(this).serialize(), function(response){
-                    //alert("Succes! \n File: " + response.exam.title);
-
-                },'json');
-            }
-            return false;
-        });
+        bindFormSubmits();
     },
     receivedEvent: function(event) {
     }

@@ -1,13 +1,18 @@
 {
     "app" : {
-        "studing" : "..STUDING..",
+        "studing" : "..STUDYING..",
         "hello" : "HELLO",
         "yourexam" : "YOUR EXAM",
         "back" : "BACK",
         "label" : {
             "title" : "TITLE:",
             "question" : "QUESTION",
-            "answer" : "ANSWER"
+            "answer" : "ANSWER",
+            "language" : "LANGUAGE OF EXAM",
+            "default" : "DEFAULT",
+            "spanish" : "SPANISH",
+            "english" : "ENGLISH",
+            "french" : "FRENCH"
         },
         "btn" : {
             "addQuestion" : "ADD QUESTION",
@@ -18,6 +23,7 @@
         "exitDialogMsg" : "EXIT APP?",
         "exitDialogTitle" : "EXIT",
         "btnYes" : "YES",
-        "btnNo" : "NO"
+        "btnNo" : "NO",
+        "examCreated" : "EXAM CREATED"
     }
 }

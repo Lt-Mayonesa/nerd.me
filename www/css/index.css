@@ -66,6 +66,11 @@ body {
 .doc-footer {
     
 }
+label, input {
+    display: block;
+    width: 90%;
+    margin: 0px auto;
+}
 
 button {
     height: 6em;
