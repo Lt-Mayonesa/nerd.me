@@ -5,6 +5,8 @@
     /* make transparent link selection, adjust last value opacity 0 to 1.0 */
 }
 
+html {height: 100%;}
+
 body {
     -webkit-touch-callout: none;
     /* prevent callout to copy image, etc when tap to hold */
@@ -18,7 +20,6 @@ body {
     background-attachment: fixed;
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
-    height: 100%;
     margin: 0px;
     padding: 0px;
     width: 100%;
@@ -52,7 +53,6 @@ body {
 
 .app {
     width: 100%;
-    height: 100%;
 }
 
 @media screen and (min-aspect-ratio: 1/1) and (min-width: 400px) {
@@ -79,7 +79,6 @@ html {
 .doc-page {
     margin-top: 80px;
     width: 100%;
-    height: 100%;
     display: none;
 }
 
@@ -129,11 +128,7 @@ button {
     float: left;
     margin-left: 10%;
 }
-label, input {
-    display: block;
-    width: 90%;
-    margin: 0px auto;
-}
+
 
 /**** HOME ****/
 
