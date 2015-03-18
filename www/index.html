@@ -42,11 +42,11 @@
         </div>
         <div class="doc-page" id="create-QA">
             <div class="doc-content">
-                <form id="formQA">
+                <form id="formQA" action="http://joacocampero.tk/examenes/exams/generateexam.php" method="post">
                     <div id="questions">
                         <label for="title" data-i18n="app.label.title"></label>
                         <input id="title" name="title" type="text" tabindex="1" required/>
-                        <input id="totalQA" name="totalQA" type="number" />
+                        <input id="totalQA" name="totalQA" type="number" style="display: none;"/>
                         <label for="p1" data-i18n="app.label.question">Pregunta</label>
                         <input class="q" id="p1" type="text" name="p1" tabindex="2" required/>
                         <label for="a1" data-i18n="app.label.answer">Respuesta</label>

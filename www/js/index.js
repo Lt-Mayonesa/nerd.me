@@ -1,7 +1,4 @@
 
-var examsDir;
-
-var str = '{"title":"historia","totalQA":"4","p1":"cuando llego colon a america?","a1":"el 12 de octubre","p2":"cuando fue la revolucion esa importante?","a2":"hace un par de aÃ±os","p3":"de que colo era el caballo blanco de colon?","a3":"no tenia caballo","p4":"como ganamos la guerra?","a4":"no la ganamos"}';
 
 var exams = [];
 var User = {
@@ -57,7 +54,7 @@ Exam.prototype.upload = function() {
 //page obj
 var $page = {
     current : '',
-    header : '',
+    header : '.doc-header',
     content : '',
     footer : '',
     navLog : [],
@@ -67,7 +64,6 @@ var $page = {
      * @returns {void}
      */
     buildPage : function (page) {
-        this.header = page + ' .doc-header';
         this.content = page + ' .doc-content';
         this.footer = page + ' .doc-footer';
     },
@@ -136,7 +132,7 @@ function setLanguage() {
         setTimeout(function() {
             $('#start-page').hide();
             init();
-        }, 2000);
+        }, 5000);
   });
 }
 
@@ -145,8 +141,7 @@ function loading(show) {
 }
 
 function fileSystemFail(error) {
-    console.log('error: ' + error);
-    navigator.notification.alert('error');
+    navigator.notification.alert('error : ' + error.code);
 }
 
 /**
@@ -155,10 +150,23 @@ function fileSystemFail(error) {
 function getUserExams() {
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
         fileSystem.root.getDirectory('exams', {create: true}, function (dirEntry) {
+            console.log(dirEntry);
             var dirReader = dirEntry.createReader();
-            dirReader.readEntries(function (data) {
-                User.exams = data;
-                console.log('Exams: ' + exams);
+            dirReader.readEntries(function (entries) {
+                console.log(entries);
+                for (i=0; i< entries.length; i++) {
+                    dirEntry.getFile(entries[i].name, null, function(fileEntry) {
+                        fileEntry.file(function(file) {
+                            var reader = new FileReader();
+                            reader.onload = function(str) {
+                                console.log(str.target.result);
+                                var loadedExam = JSON.parse(str.target.result);
+                                createExam(loadedExam, false);
+                            }
+                            reader.readAsText(file);
+                        }, fileSystemFail);
+                    }, fileSystemFail);
+                }
             }, fileSystemFail);
         }, fileSystemFail);
     }, fileSystemFail);
@@ -168,27 +176,38 @@ function getUserExams() {
  * @param {JSON object} exam the exam string converted submited $('bla')
  * @returns {undefined} null
  */
-function createExam(newExam) {
-
+function createExam(newExam, save) {
     var referenceTitle = newExam.title;
 
     referenceTitle = referenceTitle.replace(/[^a-zA-Z0-9\s]/g,"");
     referenceTitle = referenceTitle.toLowerCase();
     referenceTitle = referenceTitle.replace(/\s/g,'_');
-
+    console.log(referenceTitle);
     User.exams[referenceTitle] = new Exam(newExam);
 
-    //window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
-      //  fileSystem.root.getDirectory('exams')
-    //}, fail)
-    navigator.notification.confirm(
-        i18n.t('dialogs.gotoExam'),
-        function(index) {
-            console.log('boton: ' + index);
-        },
-        i18n.t('dialogs.examCreated'),
-        [i18n.t('dialogs.btnYes'),i18n.t('dialogs.btnNo')]
-    );
+    if (save) {
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+            fileSystem.root.getDirectory('exams', null, function(dirEntry) {
+                dirEntry.getFile(referenceTitle + '.json', {create: true, exclusive: false}, function(fileEntry) {
+                    fileEntry.createWriter(function(writer) {
+                        writer.onwrite = function(evnt) {
+                            console.log(referenceTitle + ' / write succes');
+                        }
+                        writer.write(JSON.stringify(newExam));
+                    }, fileSystemFail);
+                }, fileSystemFail);
+            },fileSystemFail);
+        }, fileSystemFail);
+
+        navigator.notification.confirm(
+            i18n.t('dialogs.gotoExam'),
+            function(index) {
+                console.log('boton: ' + index);
+            },
+            i18n.t('dialogs.examCreated'),
+            [i18n.t('dialogs.btnYes'),i18n.t('dialogs.btnNo')]
+        );
+    }
 }
 /**
 * adds QA to exam
@@ -222,12 +241,12 @@ function bindFormSubmits() {
 
         $('#totalQA').attr('value', totalQuestions);
 
-        if (!checkConnection()) {
+        if (checkConnection()) {
             data = $(this).serialize();
             $.post($(this).attr('action'), data, function(response){
                 console.log(response);
                 newExam = response.exam;
-                createExam(newExam);
+                createExam(newExam, true);
             },'json');
         } else {
             data = $(this).serializeArray();
@@ -239,7 +258,7 @@ function bindFormSubmits() {
             }
             txt += '}';
             newExam = JSON.parse(txt);
-            createExam(newExam);
+            createExam(newExam, true);
         }
         return false;
     });
