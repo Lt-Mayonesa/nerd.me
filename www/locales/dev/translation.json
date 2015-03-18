@@ -24,6 +24,7 @@
         "exitDialogTitle" : "EXIT",
         "btnYes" : "YES",
         "btnNo" : "NO",
-        "examCreated" : "EXAM CREATED"
+        "examCreated" : "EXAM CREATED",
+        "gotoExam" : "GO TO EXAM?"
     }
 }

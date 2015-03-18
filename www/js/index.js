@@ -1,20 +1,57 @@
-var navLog = [];
+
 var examsDir;
-var $user = {
+
+var str = '{"title":"historia","totalQA":"4","p1":"cuando llego colon a america?","a1":"el 12 de octubre","p2":"cuando fue la revolucion esa importante?","a2":"hace un par de aÃ±os","p3":"de que colo era el caballo blanco de colon?","a3":"no tenia caballo","p4":"como ganamos la guerra?","a4":"no la ganamos"}';
+
+var exams = [];
+var User = {
     name: 'user',
     id: '',
     email: '',
     exams: []
 }
-var Exam = function(title) {
-    this.title = title;
+
+
+var Question = function(ques, ans, num) {
+    this.question = ques;
+    this.answer = ans;
+    this.hint = '';
+    this.num = num;
+}
+Question.prototype.reverse = function () {
+    this.hint = this.answer.split("").reverse().join("");
+}
+Question.prototype.takeOut = function () {
+    this.hint = this.answer.replace(/[aeiou]/ig,' ');
+}
+Question.prototype.editAnswer = function (newAns) {
+    this.answer = newAns;
 }
 
-var examQA = {
-    title : '',
-    total : 0,
-    questions : [],
-    answers : []
+var Exam = function(exam) {
+    this.title = exam.title || 'untitled';
+    this.total = exam.totalQA;
+    this.questions = [];
+    this.setQuestions = function() {
+        if (this.questions.length == 0) {
+            for (i = 1; i <= this.total; i++) {
+                this.addQuestion(exam['p'+i],exam['a'+i]);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+    this.setQuestions();
+    console.log('created');
+}
+
+Exam.prototype.addQuestion = function (question, answer) {
+    var queans = new Question(question, answer, this.questions.length + 1);
+    this.questions.push(queans);
+}
+Exam.prototype.upload = function() {
+    console.log('gonna upload the shit later');
 }
 
 //page obj
@@ -23,6 +60,7 @@ var $page = {
     header : '',
     content : '',
     footer : '',
+    navLog : [],
     /**
      * 
      * @param {string} page asign current page elementes
@@ -46,16 +84,16 @@ var $page = {
                 pageId : $page.current,
                 tween : animation
             };
-            if(!back) navLog.push(navObj);
+            if(!back) $page.navLog.push(navObj);
         }
         $page.current = id;
         $page.buildPage($page.current);
         $($page.current).show();
-        if ($page.current === '#home') navLog = [];
+        if ($page.current === '#home') $page.navLog = [];
     },
     
     goBack : function () {
-        if((navLog.length - 1) === -1) {
+        if(($page.navLog.length - 1) === -1) {
             navigator.notification.confirm(
                 i18n.t('dialogs.exitDialogMsg'),
                 function (index) {
@@ -66,8 +104,8 @@ var $page = {
                 [i18n.t('dialogs.btnYes'),i18n.t('dialogs.btnNo')]
             );
         } else {
-            var backTo = navLog[(navLog.length) - 1];
-            navLog.pop();
+            var backTo = $page.navLog[($page.navLog.length) - 1];
+            $page.navLog.pop();
             this.toPage(backTo.pageId, backTo.tween, true);
         }
         
@@ -83,7 +121,7 @@ var $page = {
  */
 function init() {
     $page.toPage('#home', '');
-    
+    $($page.content).append('User.exams: ' + JSON.stringify(User.exams));
 }
 
 /**
@@ -107,7 +145,7 @@ function loading(show) {
 }
 
 function fileSystemFail(error) {
-    console.log(error);
+    console.log('error: ' + error);
     navigator.notification.alert('error');
 }
 
@@ -116,28 +154,41 @@ function fileSystemFail(error) {
  */
 function getUserExams() {
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
-        examsDir = fileSystem.root.getDirectory('exams', {create: true}, function (dirEntry) {
+        fileSystem.root.getDirectory('exams', {create: true}, function (dirEntry) {
             var dirReader = dirEntry.createReader();
             dirReader.readEntries(function (data) {
-                $user.exams = data;
-                console.log('Exams: ' + $user.exams);
+                User.exams = data;
+                console.log('Exams: ' + exams);
             }, fileSystemFail);
         }, fileSystemFail);
     }, fileSystemFail);
 }
 /**
  * creates json file exam and store localy;
- * @param {type} form the form submited $('bla')
+ * @param {JSON object} exam the exam string converted submited $('bla')
  * @returns {undefined} null
  */
-function createExamQA(jsonString) {
-    console.log(jsonString);
-    var examun = JSON.parse(jsonString);
-    var newTitle = examun.title;
-    newTitle = newTitle.replace(/[^a-zA-Z0-9\s]/g,"");
-    newTitle = newTitle.toLowerCase();
-    newTitle = newTitle.replace(/\s/g,'-');
-    console.log(newTitle);
+function createExam(newExam) {
+
+    var referenceTitle = newExam.title;
+
+    referenceTitle = referenceTitle.replace(/[^a-zA-Z0-9\s]/g,"");
+    referenceTitle = referenceTitle.toLowerCase();
+    referenceTitle = referenceTitle.replace(/\s/g,'_');
+
+    User.exams[referenceTitle] = new Exam(newExam);
+
+    //window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+      //  fileSystem.root.getDirectory('exams')
+    //}, fail)
+    navigator.notification.confirm(
+        i18n.t('dialogs.gotoExam'),
+        function(index) {
+            console.log('boton: ' + index);
+        },
+        i18n.t('dialogs.examCreated'),
+        [i18n.t('dialogs.btnYes'),i18n.t('dialogs.btnNo')]
+    );
 }
 /**
 * adds QA to exam
@@ -171,14 +222,12 @@ function bindFormSubmits() {
 
         $('#totalQA').attr('value', totalQuestions);
 
-        var fakeInternet = false;
-        if (fakeInternet) {
+        if (!checkConnection()) {
             data = $(this).serialize();
             $.post($(this).attr('action'), data, function(response){
                 console.log(response);
                 newExam = response.exam;
-                createExamQA(newExam);
-                navigator.notification.alert(i18n.t('dialogs.examCreated'));
+                createExam(newExam);
             },'json');
         } else {
             data = $(this).serializeArray();
@@ -186,11 +235,11 @@ function bindFormSubmits() {
             var txt = '{';
             for (i = 0; i < data.length; i++) {
                 txt += '"' + data[i].name + '":"' + data[i].value + '"';
-                if (i < totalQuestions -1) txt += ',';
+                if (i < data.length -1) txt += ',';
             }
             txt += '}';
-            newExam = txt;
-            createExamQA(newExam);
+            newExam = JSON.parse(txt);
+            createExam(newExam);
         }
         return false;
     });
