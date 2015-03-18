@@ -1,8 +1,9 @@
 {
     "app" : {
         "studing" : "..STUDYING..",
+        "nerdme" : "nerd.me",
         "hello" : "HELLO",
-        "yourexam" : "YOUR EXAM",
+        "yourexams" : "YOUR EXAMS",
         "back" : "BACK",
         "label" : {
             "title" : "TITLE:",
