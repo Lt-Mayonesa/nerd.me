@@ -1,5 +1,3 @@
-
-
 var exams = [];
 var User = {
     name: 'user',
@@ -117,7 +115,7 @@ var $page = {
  */
 function init() {
     $page.toPage('#home', '');
-    $($page.content).append('User.exams: ' + JSON.stringify(User.exams));
+    $($page.content).append('<h3>' + User.exams.matematicas.title + '</h3>');
 }
 
 /**
@@ -179,7 +177,13 @@ function getUserExams() {
 function createExam(newExam, save) {
     var referenceTitle = newExam.title;
 
-    referenceTitle = referenceTitle.replace(/[^a-zA-Z0-9\s]/g,"");
+    referenceTitle = referenceTitle
+        .replace('á','a')
+        .replace('é','e')
+        .replace('í','i')
+        .replace('ó','o')
+        .replace('ú','u')
+        .replace('ñ','n');
     referenceTitle = referenceTitle.toLowerCase();
     referenceTitle = referenceTitle.replace(/\s/g,'_');
     console.log(referenceTitle);
