@@ -148,7 +148,7 @@ function fileSystemFail(error) {
 function getUserExams() {
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
         fileSystem.root.getDirectory('exams', {create: true}, function (dirEntry) {
-            console.log(dirEntry);
+            trace('dirEntry : ' + JSON.stringify(dirEntry));
             var dirReader = dirEntry.createReader();
             dirReader.readEntries(function (entries) {
                 console.log(entries);
@@ -300,3 +300,7 @@ var app = {
     receivedEvent: function(event) {
     }
 };
+
+function trace(data) {
+    $('#log').append('<p>' + data + '</p>');
+}

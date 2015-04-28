@@ -1,7 +1,7 @@
 {
     "lib": {
         "www": {
-            "id": "hello-world-template",
+            "id": "nerd-me",
             "version": "master",
             "uri": "https://github.com/phonegap/phonegap-app-hello-world/archive/master.tar.gz",
             "link": false
